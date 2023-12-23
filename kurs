@@ -1,0 +1,785 @@
+#include <ctime>
+#include <iostream>
+#include <chrono>
+#include <Windows.h>
+#include <fstream>
+#include <string>
+#include <cstring>
+using namespace std;
+using namespace chrono;
+
+/*===========================================================
+LAB - 1*/
+
+void LAB1()
+{
+	setlocale(0, "");
+	// 1 задание
+	cout << "<ТИПЫ ДАННЫХ И ИХ ВНУТРЕННЕЕ ПРЕДСТАВЛЕНИЕ В ПАМЯТИ>\n\nМеню:\n1) Типы данных в байтах.\n2) Представление знаковых целых чисел в памяти компьютера.\n3) Представление знаковых десятичных дробей в памяти компьютера.\n\nЗадание 1.\nТипы данных в байтах:" << '\n' <<
+		"int: " << sizeof(int) << '\n' <<
+		"short int: " << sizeof(short int) << '\n' <<
+		"float: " << sizeof(float) << '\n' <<
+		"double: " << sizeof(double) << '\n' <<
+		"long double: " << sizeof(long double) << '\n' <<
+		"bool: " << sizeof(bool) << '\n' <<
+		"char: " << sizeof(char) << '\n' << '\n';
+
+	// 2 задание
+	int a, g, v;
+	cout << "Задание 2(Представление знаковых целых чисел в памяти компьютера).\nВведите знаковое целое число:\nВвод: ";
+	cin >> a;
+	cout << "\nВведите число сдвинутых битов влево:\nВвод: ";
+	cin >> g;
+	unsigned int b = 32; // 32 разряда
+	unsigned int m = 1 << b - (g + 1); //побитовое сравнение
+
+	for (int i = 1; i <= b; i++)
+	{
+		cout << (a & m ? '1' : '0'); // представление числа 'a' в двоичной системе из 31 разряда
+		m = m >> 1;
+
+		if (i % 8 == 0) // промежутки каждые 8 разрядов
+		{
+			cout << ' ';
+		}
+
+		if (i % b - 1 == 0) // промежуток после знакового разряда
+		{
+			cout << ' ';
+		}
+	}
+	cout << endl;
+
+	// 3 задание
+	union
+	{
+		int c;
+		float d;
+	};
+
+	cout << "\nЗадание 3(Представление знаковых десятичных дробей в памяти компьютера).\nВведите знаковое число в виде десятичных дробей:\nВвод: ";
+	cin >> d;
+	cout << "\nВведите число сдвинутых битов влево:\nВвод: ";
+	cin >> v;
+	unsigned int m2 = 1 << b - (v + 1); //побитовое сравнение для не целых чисел
+
+	for (int i = 1; i <= b; i++)
+	{
+		cout << (c & m2 ? '1' : '0'); // представление числа 'a' в двоичной системе из 31 разряда
+		m2 = m2 >> 1;
+
+		if (i % 8 == 0) // промежутки каждые 8 разрядов
+		{
+			cout << ' ';
+		}
+
+		if (i % b - 1 == 0) // промежуток после знакового разряда
+		{
+			cout << ' ';
+		}
+	}
+	cout << endl;
+}
+
+/*===========================================================
+LAB - 2*/
+
+void LAB2()
+{
+	setlocale(0, "");
+
+	time_point < steady_clock,
+		duration<__int64, ratio<1, 1000000000 >>>
+		start, end;
+	nanoseconds result;
+
+	const int N = 100; // создание массива рандомных чисел (100 значений + и -)
+	int arr[N];
+	for (int i = 0; i < N; i++)
+	{
+		arr[i] = rand() % 200 - 100;
+	}
+	cout << "<ДЕЙСТВИЯ НАД ДВУМЕРНЫМИ СТАТИЧЕСКИМИ МАССИВАМИ>\n\nМеню:\n1) Сортировка массива bubble sort.\n2) Минимальное и максимальное значения.\n3) Кол-во значений меньше и больше веденных.\n4) Нахождение введеного значения.\n5) Замена индексов в массиве.\n6) Сортировка 2-го массива comb sort.\n" << endl;
+
+	cout << "Задание 1(Сортировка массива bubble sort).\nСозданный массив: \n"; // вывод созданного массива на экран
+	for (int i = 0; i < N; i++)
+	{
+		cout << arr[i] << ' ';
+	}
+	cout << endl;
+	system("pause > nul");
+
+	start = steady_clock::now(); // BUBBLE сортировка
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N - 1; j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				swap(arr[j], arr[j + 1]);
+			}
+		}
+	}
+	cout << endl;
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+
+	cout << "Сортированный массив: \n"; // вывод отсортированного массива на экран
+	for (int i = 0; i < N; i++)
+	{
+		cout << arr[i] << ' ';
+	}
+	cout << endl;
+	cout << "Сортировка бабл заняла " << result.count() << " наносекунд\n\n";
+	system("pause > nul");
+
+	int result1 = result.count();
+
+	start = steady_clock::now(); // min max числа
+	cout << "Задание 2(Минимальное и максимальное значения).\nМаксимальное значение: " << arr[N - 1] << '\n';
+	cout << "Минимальное значение: " << arr[0] << endl;
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+	cout << "Нахождение max и min значений не отсортированного массива заняло " << (result.count() + result1) << " наносекунд\n";
+	cout << "Нахождение max и min значений отсортированного массива заняло " << result.count() << " наносекунд\n\n";
+	system("pause > nul");
+
+	start = steady_clock::now(); // среднее значение массива
+	int sum = 0;
+	for (int i = 0; i < N; i++)
+	{
+		sum += arr[i];
+	}
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+
+	start = steady_clock::now(); // нахождение индекса среднего значения массива
+	int average = (sum / N);
+	int k = 0;
+	int l;
+	for (int i = 0; i < N; i++)
+	{
+		if (arr[i] == average)
+		{
+			k += 1;
+			l = i;
+		}
+
+	}
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+
+	cout << "Задание 3(Кол-во значений меньше и больше веденных).\nНахождение количества значений массива меньше введеного\n"; // кол-во эл-ов меньше а
+	cout << "Введите значение: ";
+	int a;
+	k = 0;
+	cin >> a;
+	for (int i = 0; i < N; i++)
+	{
+		if (arr[i] < a)
+		{
+			k += 1;
+		}
+	}
+	cout << "Количество найденых значение меньше введеного: " << k << "\n\n";
+
+	cout << "Нахождение количества значений массива больше введеного\n"; // кол-во эл-ов больше b
+	cout << "Введите значение: ";
+	int b;
+	cin >> b;
+	k = 0;
+	for (int i = 0; i < N; i++)
+	{
+		if (arr[i] > b)
+		{
+			k += 1;
+		}
+	}
+	cout << "Количество найденых значение больше введеного: " << k << "\n\n";
+
+	cout << "Задание 4(Нахождение введеного значения).\n"; // поиск числа в массиве
+	cout << "Введите значение: ";
+	int c;
+	cin >> c;
+	k = 0;
+	for (int i = 0; i < N; i++)
+	{
+		if (arr[i] == c)
+		{
+			k += 1;
+		}
+	}
+	if (k == 0)
+	{
+		cout << "Введенное значение не присутствует в массиве" << "\n\n";
+	}
+	else
+		cout << "Введенное значение присутствует в массиве" << "\n\n";
+
+	cout << "Задание 5(Замена индексов в массиве).\n"; // замена элементов массива
+	int ind1;
+	int ind2;
+	cout << "Введите первый индекс:";
+	cin >> ind1;
+	cout << "Введите второй индекс:";
+	cin >> ind2;
+
+	start = steady_clock::now();
+	swap(arr[ind1], arr[ind2]);
+	for (int i = 0; i < N; i++)
+	{
+		cout << arr[i] << ' ';
+	}
+	cout << endl;
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+	cout << "Замена индексов заняло " << result.count() << " наносекунд\n\n";
+	system("pause > nul");
+
+	const int n = 100; // создание массива 2 рандомных чисел (100 значений + и -)
+	int arr2[n];
+	for (int i = 0; i < n; i++)
+	{
+		arr2[i] = rand() % 200 - 100;
+	}
+
+	cout << "Задание 6(Сортировка 2-го массива comb sort).\nСозданный массив 2: \n"; // вывод созданного массива 2 на экран
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr2[i] << ' ';
+	}
+	cout << endl;
+	system("pause > nul");
+
+	start = steady_clock::now();
+	{
+		int gap = n; // COMB сорт
+		while (gap != 1)
+		{
+			gap = int(gap / 1.3);
+			if (gap < 1)
+				gap = 1;
+			for (int i = 0; i < n - gap; i++)
+			{
+				if (arr2[i] > arr2[i + gap])
+					swap(arr2[i], arr2[i + gap]);
+			}
+		}
+	}
+	end = steady_clock::now();
+	result = duration_cast<nanoseconds>(end - start);
+	cout << endl;
+
+	cout << "Сортированный массив 2: \n"; // вывод отсортированного массива 2 на экран
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr2[i] << ' ';
+	}
+	cout << endl;
+	cout << "Сортировка comb заняла " << result.count() << " наносекунд\n\n";
+}
+
+/*===========================================================
+LAB - 3*/
+
+const int sizeArray = 6; //размер матрицы
+
+/*Функция вывода массива*/
+void showArray(int(*A)[sizeArray]) {
+	HANDLE hStdout;
+	COORD destCoord;
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	system("cls");
+	for (int i = 0; i < sizeArray; i++)
+		for (int j = 0; j < sizeArray; j++)
+		{
+			destCoord.X = i * 4;
+			destCoord.Y = j;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << A[i][j];
+		}
+	cout << "\n";
+}
+
+/*Функция заполнения массива(матрицы) змейкой*/
+void fillSnake(int(*A)[sizeArray]) {
+	for (int i = 0; i < sizeArray; i++)
+		for (int j = 0; j < sizeArray; j++) {
+			A[i][j] = 0;
+		}
+
+	showArray(A);
+
+	int* end = A[0] + sizeArray * sizeArray - 1;
+
+	HANDLE hStdout;
+	COORD destCoord;
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	for (int* pt = A[0], i = 0, x = 0, y = 0; pt <= end + (sizeArray - 1); pt++, i++, y++) {
+		if (i % sizeArray == 0 && i != 0) {
+			x++;
+			y = 0;
+			if (x % 2 == 0)
+				pt = &A[x][y];
+			else
+				pt = &A[x][y + sizeArray - 1];
+		}
+		if (x % 2 == 0) {
+			destCoord.X = x * 4;
+			destCoord.Y = y;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			*pt = 1 + rand() % (sizeArray * sizeArray);
+			cout << *pt;
+			Sleep(80);
+		}
+		else {
+			destCoord.X = x * 4;
+			destCoord.Y = sizeArray - y - 1;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			*(pt - y - y) = 1 + rand() % (sizeArray * sizeArray);
+			cout << *(pt - y - y);
+			Sleep(80);
+		}
+	}
+
+	cout << "\r";
+	for (int i = 1; i <= sizeArray; i++)
+		cout << "\n";
+	cout << "\n^^^Задание 1(Заполнение двумерного массива змейкой).^^^\n";
+	system("pause > nul");
+
+}
+
+/*Функция создания массива(матрицы)*/
+void fillArray(int(*B)[sizeArray]) {
+	for (int i = 0; i < sizeArray; i++)
+		for (int j = 0; j < sizeArray; j++) {
+			B[i][j] = 1 + rand() % (sizeArray * sizeArray);
+		}
+}
+
+/*Функция замены по часовой*/
+void shakeA(int(*A)[sizeArray]) {
+	for (int i = 0; i < (sizeArray / 2); i++) {
+		for (int j = 0; j < sizeArray; j++) {
+			swap(A[i][j], A[i + (sizeArray / 2)][j]);
+		}
+	}
+	for (int i = 0; i < (sizeArray / 2); i++) {
+		for (int j = 0; j < (sizeArray / 2); j++) {
+			swap(A[i][j], A[i + (sizeArray / 2)][j + (sizeArray / 2)]);
+		}
+	}
+}
+
+/*Функция замены по диагонали*/
+void shakeB(int(*A)[sizeArray]) {
+	for (int i = 0; i < (sizeArray / 2); i++) {
+		for (int j = 0; j < sizeArray; j++) {
+			if (j < (sizeArray / 2)) {
+				swap(A[i][j], A[i + (sizeArray / 2)][j + (sizeArray / 2)]);
+			}
+			else {
+				swap(A[i][j], A[i + (sizeArray / 2)][j - (sizeArray / 2)]);
+			}
+		}
+	}
+}
+
+/*Функция замены по вертикали*/
+void shakeC(int(*A)[sizeArray]) {
+	for (int i = 0; i < sizeArray; i++) {
+		for (int j = 0; j < (sizeArray / 2); j++) {
+			swap(A[i][j], A[i][j + (sizeArray / 2)]);
+		}
+	}
+}
+
+/*Функция замены по горизонтали*/
+void shakeD(int(*A)[sizeArray]) {
+	for (int i = 0; i < (sizeArray / 2); i++) {
+		for (int j = 0; j < sizeArray; j++) {
+			swap(A[i][j], A[i + (sizeArray / 2)][j]);
+		}
+	}
+}
+
+/*Функция сортировки бабл*/
+void sort(int(*A)[sizeArray]) {
+	int* pt = A[0];
+	bool sorted = false;
+
+	while (sorted != true) {
+		sorted = true;
+		for (int i = 0; i < (sizeArray * sizeArray - 1); i++) {
+			if (*(pt + i) > *(pt + i + 1)) {
+				swap(*(pt + i), *(pt + i + 1));
+				sorted = false;
+			}
+		}
+	}
+}
+
+/*Функция сортировки комб*/
+void sort2(int(*A)[sizeArray]) {
+	int* pt = A[0];
+	int gap = (sizeArray * sizeArray);
+
+	while (gap != 1) {
+		gap = int(gap / 1.3);
+		if (gap < 1)
+			gap = 1;
+		for (int i = 0; i < (sizeArray * sizeArray - gap); i++) {
+			if (*(pt + i) > *(pt + i + gap))
+				swap(*(pt + i), *(pt + i + gap));
+		}
+	}
+}
+
+/*Функция сложения массивов(матриц)*/
+void sumArrays(int(*A)[sizeArray], int(*B)[sizeArray]) {
+	for (int i = 0; i < sizeArray; i++)
+		for (int j = 0; j < sizeArray; j++)
+			A[i][j] += B[i][j];
+
+	showArray(A);
+}
+
+/*Основная программа*/
+void LAB3() {
+	setlocale(0, "");
+	srand(time(0));
+
+	int selectUserNum, chooseUser;
+
+	int A[sizeArray][sizeArray];
+	int B[sizeArray][sizeArray];
+
+	/*Заполнить массив(1)*/
+	cout << "<ДЕЙСТВИЯ НАД ДВУМЕРНЫМИ СТАТИЧЕСКИМИ МАССИВАМИ С ПОМОЩЬЮ УКАЗАТЕЛЕЙ>\n\nМеню:\n1) Заполнение двумерного массива змейкой.\n2) Замена блоков массива.\n3) Сортировка массива comb sort.\n4) Математические действия над двумерным массивом.\n5) Сумма матриц(двумерных массивов).\n\n";
+	system("pause > nul");
+	fillSnake(A);
+
+	/*Сортировка блоками(2)*/
+	cout << "\nЗадание 2(Замена блоков массива).\nВыберите номер замены блоков:\n";
+	cout << "\t 1 - Замена по часовой стрелке (A)\n";
+	cout << "\t 2 - Замена по диагонали (B)\n";
+	cout << "\t 3 - Замена по вертикали (C)\n";
+	cout << "\t 4 - Замена по горизонтали (D)\n";
+	cout << "Номер: ";
+	cin >> chooseUser;
+	cout << "\n";
+	showArray(A);
+	cout << "\nМассив до замены:\n";
+	switch (chooseUser)
+	{
+	case 1:
+		shakeA(A);
+		break;
+
+	case 2:
+		shakeB(A);
+		break;
+
+	case 3:
+		shakeC(A);
+		break;
+
+	case 4:
+		shakeD(A);
+		break;
+	default:
+		break;
+	}
+	system("pause > nul");
+	system("cls");
+	showArray(A);
+	cout << "\nМассив после замены:\n";
+	system("pause > nul");
+
+
+	/*Сортировка(3)*/
+	system("cls");
+	showArray(A);
+	cout << "\nМассив до сортировки comb\n^^^Задание 3(Сортировка массива comb sort).^^^\n";
+	system("pause > nul");
+	sort2(A);
+	showArray(A);
+	cout << "\nМассив после сортировки comb\n";
+	system("pause > nul");
+
+
+	/*Математические операции с матрицей*/
+	int input;
+	string sign;
+	cout << "\nЗадание 4(Математические действия над двумерным массивом).\nНапишите математическое действие ('+', '-', '*', '/') и число через пробел\n";
+	cout << "Например: '+ 5'\n";
+	cout << "Ввод: ";
+	cin >> sign >> input;
+
+	if (sign == "+") {
+		for (int i = 0; i < sizeArray; i++)
+			for (int j = 0; j < sizeArray; j++)
+				A[i][j] += input;
+	}
+	else if (sign == "-") {
+		for (int i = 0; i < sizeArray; i++)
+			for (int j = 0; j < sizeArray; j++)
+				A[i][j] -= input;
+	}
+	else if (sign == "*") {
+		for (int i = 0; i < sizeArray; i++)
+			for (int j = 0; j < sizeArray; j++)
+				A[i][j] *= input;
+	}
+	else if (sign == "/") {
+		for (int i = 0; i < sizeArray; i++)
+			for (int j = 0; j < sizeArray; j++)
+				A[i][j] /= input;
+	}
+	else {
+		cout << "Неправильный знак или число!";
+	}
+
+	/*ИДЗ (1) сумма матриц*/
+	system("cls");
+	showArray(A);
+	cout << "\nПолученная матрица (A)\n";
+	system("pause > nul");
+
+	system("cls");
+	fillArray(B);
+	showArray(B);
+	cout << "\nСозданная матрица (B)\n";
+	system("pause > nul");
+	sumArrays(A, B);
+	cout << "\nСумма матриц (A) и (B)\n^^^Задание 5(Сумма матриц(двумерных массивов)).^^^\n\n";
+}
+
+/*===========================================================
+LAB - 4*/
+
+void delChar(char ch, char* arr, int index)
+{
+	for (int i = index; i < strlen(arr); i++)
+	{
+		arr[i] = arr[i + 1];
+	}
+}
+
+bool isHere(char ch, char* arr)
+{
+	int f = 0;
+	for (int i = 0; i < strlen(arr); i++)
+	{
+		if (ch == arr[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void LAB4()
+{
+	setlocale(0, " ");
+	setlocale(LC_ALL, "ru");
+	char S[700];
+	char text[50][50];
+	char let[] = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm";
+	char symbols[] = { ' ',',','.',':','"', '?', '!', '-', '(', ')', ';', '\0' };
+	char numbers[] = "1234567890";
+	char tempChar[20];
+	int count = 0;
+	string path;
+	string str;
+	ifstream fin;
+	int answer;
+
+	for (int i = 0; i < 50; i++)
+	{
+		text[i][0] = '\0';
+	}
+	cout << "<ДЕЙСТВИЯ НАД СТРОКАМИ>\n\nМеню: " << endl;
+	cout << "1) Ввод последовательности символов.\n2) Редактирование данной последовательности. \n3) Вывод на экран слова последовательности, не содержащие цифр. \n4) Вывод всех слов исходной последовательности на экран вертикально. \n5) Линейный поиск подстроки.\n" << endl;
+	cout << "Задание 1.\nВыберите способ ввода последовательности символов:\n1 - С файла\n2 - С клавиатуры\nВвод:";
+	cin >> answer;
+	switch (answer)
+	{
+	case 1:
+		cout << "Введите путь до файла:\nВвод:";
+		cin >> path;
+		fin.open(path);
+		if (fin.is_open())
+		{
+			string str1;
+			while (!fin.eof())
+			{
+				getline(fin, str1);
+				str += str1;
+			}
+		}
+		fin.close();
+		for (int i = 0; i < str.length(); i++)
+		{
+			S[i] = (char)str[i];
+		}
+		S[str.length()] = '\0';
+		break;
+	case 2:
+		cout << "\nВведите последовательность символов(последовательность должна заканчиваться точкой).\nВвод:";
+		cin.getline(S, 999, '\n');
+		cin.getline(S, 999, '\n');
+		delChar(S[0], S, -1);
+		break;
+	default:
+		break;
+	}
+	cout << "\nСтрока:\n" << S << endl;
+
+	//Задание 2
+	cout << "\nЗадание 2(Исправление регистра и других ошибок)." << endl;
+	for (int i = 0; i < strlen(S); i++)
+	{
+		for (int j = 0; j < (strlen(let) - 26); j++)
+		{
+			if (i != 0 && S[i] == let[j])
+			{
+				S[i] = let[j + 26];
+			}
+		}
+	}
+	for (int i = 0; i < strlen(S) - 1; i++)
+	{
+		if (isHere(S[i], symbols) && isHere(S[i + 1], symbols) && S[i] == S[i + 1])
+		{
+			if (S[i] == '.' && S[i + 1] == '.' && S[i + 2] == '.')
+			{
+				i += 2;
+			}
+			else
+			{
+				delChar(S[i], S, i);
+				i--;
+			}
+		}
+	}
+	cout << S << endl;
+	system("pause > nul");
+
+	//Задание 3 (3-без цифр)
+	cout << "\nЗадание 3(Удаление слов содержащие цифры)." << endl;
+	count = 0;
+	for (int i = 0, j = 0; i < strlen(S); i++, j++)
+	{
+		tempChar[j] = S[i];
+		if (isHere(S[i], symbols))
+		{
+			tempChar[j] = '\0';
+			for (int k = 0; k < strlen(tempChar); k++)
+			{
+				if (isHere(tempChar[k], symbols))
+				{
+					delChar(tempChar[k], tempChar, k);
+				}
+			}
+			int f = 1;
+			j = -1;
+			for (int k = 0; k < strlen(tempChar); k++)
+			{
+				if (strlen(tempChar) > 0)
+				{
+					text[count][k] = tempChar[k];
+					text[count][k + 1] = '\0';
+					if (isHere(tempChar[k], numbers))
+					{
+						f = 0;
+					}
+				}
+			}
+			if (f && strlen(tempChar) > 0)
+			{
+				cout << tempChar << " ";
+			}
+			count += 1;
+		}
+	}
+	cout << endl;
+	system("pause > nul");
+
+	//Задание 4(6-вертикальный вывод)
+	cout << "\nЗадание 4(Вывод слов последовательности в столбец)." << endl;
+	for (int i = 0; i < 50; i++)
+	{
+		if (strlen(text[i]) > 0)
+		{
+			cout << text[i] << endl;
+		}
+	}
+	system("pause > nul");
+
+	//Задание 5(поиск подстроки)
+	char F[20];
+	cout << "\nЗадание 5(Поиск подстроки)." << endl;
+	cout << "Строка: " << endl;
+	cout << S << endl;
+	cout << "\nВведите подстроку, которую нужно найти.\nВвод:";
+	cin >> F;
+	unsigned indices[30];
+	for (int i = 0; i < 30; i++)
+	{
+		indices[i] = 0;
+	}
+	for (int i = 0, j = 0, k = 0; i < strlen(S); i++)
+	{
+		if (F[j] == S[i])
+		{
+			j++;
+			if (j == strlen(F))
+			{
+				indices[k] = i - strlen(F);
+				j = 0;
+				k++;
+			}
+		}
+		else
+		{
+			j = 0;
+		}
+	}
+	count = 0;
+	for (int i = 0; indices[i] != 0; i++)
+	{
+		count += 1;
+		cout << "Подстрока находится на позиции: " << indices[i] + 1 << " ";
+	}
+	if (count == 0)
+	{
+		cout << "Такой подстроки не найдено!";
+	}
+	cout << endl;
+}
+
+/*==================================================
+ПРОГРАММА*/
+
+int main()
+{
+	setlocale(0, " ");
+	setlocale(LC_ALL, "ru");
+	int i;
+	while (true)
+	{
+		cout << "Введите номер задачи(от 1 до 4), или любое другое число чтобы выйти:\n1 - ТИПЫ ДАННЫХ И ИХ ВНУТРЕННЕЕ ПРЕДСТАВЛЕНИЕ В ПАМЯТИ\n2 - ДЕЙСТВИЯ НАД ОДНОМЕРНЫМИ СТАТИЧЕСКИМИ МАССИВАМИ\n3 - ДЕЙСТВИЯ НАД ДВУМЕРНЫМИ СТАТИЧЕСКИМИ МАССИВАМИ С ПОМОЩЬЮ УКАЗАТЕЛЕЙ\n4 - ДЕЙСТВИЯ НАД СТРОКАМИ\nВвод:";
+		cin >> i;
+		switch (i)
+		{
+		case 1: system("cls"); LAB1(); system("pause"); system("cls"); break;
+		case 2: system("cls"); LAB2(); system("pause"); system("cls"); break;
+		case 3: system("cls"); LAB3(); system("pause"); system("cls"); break;
+		case 4: system("cls"); LAB4(); system("pause"); system("cls"); break;
+		default: return 0;
+		}
+	}
+}
